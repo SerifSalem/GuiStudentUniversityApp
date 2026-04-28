@@ -12,22 +12,25 @@ import androidx.compose.runtime.remember
 
 @Composable
 fun App() {
-    // Stores the main University object (data source)
     val university = remember { University() }
-    // State list for students displayed on UI
     val studentList = remember { mutableStateListOf<Student>() }
 
     MaterialTheme {
         Column {
-            // Composable to add a new student using a callback
             AddStudent(onStudentAdded = { student ->
-                // Add student to the University data
                 university.addStudent(student)
-                studentList.clear()  // Clear current UI list
-                // Copy updated data to UI state list
+                studentList.clear()
                 studentList.addAll(university.studentList)
             })
-            // Display the current list of students on screen
+            // Composable to search students by course using callback
+            SearchByCourse(onCourseEntered = { course ->
+                // Get filtered students from University
+                val results = university.findStudentsByCourse(course)
+                studentList.clear()  // Clear current UI list
+                studentList.addAll(results)  // Update UI with filtered results
+            })
+
+            // Display the current list of students (either full list or filtered results)
             StudentList(studentList)
         }
     }
@@ -102,3 +105,28 @@ fun StudentList(students: List<Student>) {
     }
 }
 
+@Composable
+fun SearchByCourse(onCourseEntered: (String) -> Unit) {
+    // Stores the user input for course
+    val courseState = remember { mutableStateOf("") }
+
+    Column {
+        Text("Enter course")  // Label for the input section
+
+        OutlinedTextField(
+            value = courseState.value,  // Current value of the TextField
+            singleLine = true,  // Restricts input to a single line
+            onValueChange = { courseState.value = it },  // Updates state when user types
+            label = { Text("Course") }  // Placeholder/label inside the TextField
+        )
+
+        Button(
+            onClick = {
+                // Sends entered course back to App via callback
+                onCourseEntered(courseState.value)
+            }
+        ) {
+            Text("Search by Course")  // Button label
+        }
+    }
+}
