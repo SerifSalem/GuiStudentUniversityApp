@@ -12,24 +12,22 @@ import androidx.compose.runtime.remember
 
 @Composable
 fun App() {
-
+    // Stores the main University object (data source)
     val university = remember { University() }
-
-    val studentList = remember {
-        mutableStateListOf<Student>()
-    }
+    // State list for students displayed on UI
+    val studentList = remember { mutableStateListOf<Student>() }
 
     MaterialTheme {
         Column {
-
+            // Composable to add a new student using a callback
             AddStudent(onStudentAdded = { student ->
-
+                // Add student to the University data
                 university.addStudent(student)
-
-                studentList.clear()
+                studentList.clear()  // Clear current UI list
+                // Copy updated data to UI state list
                 studentList.addAll(university.studentList)
             })
-
+            // Display the current list of students on screen
             StudentList(studentList)
         }
     }
