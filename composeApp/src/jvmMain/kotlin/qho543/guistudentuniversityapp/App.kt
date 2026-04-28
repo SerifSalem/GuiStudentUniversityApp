@@ -11,6 +11,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
 @Composable
+fun App() {
+
+    val university = remember { University() }
+
+    val studentList = remember {
+        mutableStateListOf<Student>()
+    }
+
+    MaterialTheme {
+        Column {
+
+            AddStudent(onStudentAdded = { student ->
+
+                university.addStudent(student)
+
+                studentList.clear()
+                studentList.addAll(university.studentList)
+            })
+
+            StudentList(studentList)
+        }
+    }
+}
+
+@Composable
 fun AddStudent(onStudentAdded: (Student) -> Unit) {
 
     val idState = remember { mutableStateOf("") }
@@ -75,25 +100,6 @@ fun StudentList(students: List<Student>) {
     Column {
         students.forEach {
             Text(it.toString())
-        }
-    }
-}
-
-@Composable
-fun App() {
-
-    val students = remember {
-        mutableStateListOf<Student>()
-    }
-
-    MaterialTheme {
-        Column {
-
-            AddStudent(onStudentAdded = {
-                students.add(it)
-            })
-
-            StudentList(students)
         }
     }
 }
