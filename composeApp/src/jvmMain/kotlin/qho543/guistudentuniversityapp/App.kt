@@ -10,13 +10,22 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
+
+@Composable
+fun StudentList(students: List<Student>) {
+    Column {
+        students.forEach {
+            Text(it.toString())
+        }
+    }
+}
+
 @Composable
 fun App() {
 
-    val students = remember {
-        mutableStateListOf<Student>()
-    }
-
+    // State list of students (Exercise 1)
+    val students = remember { mutableStateListOf<Student>() }
+    // State variables for input fields (Exercise 2)
     val idState = remember { mutableStateOf("") }
     val nameState = remember { mutableStateOf("") }
     val courseState = remember { mutableStateOf("") }
@@ -24,6 +33,8 @@ fun App() {
 
     MaterialTheme {
         Column {
+
+            // Input fields
             OutlinedTextField(
                 value = idState.value,
                 singleLine = true,
@@ -52,6 +63,7 @@ fun App() {
                 label = { Text("Enter mark") }
             )
 
+            // Add student button
             Button(
                 onClick = {
                     val student = Undergraduate(
@@ -61,9 +73,9 @@ fun App() {
                     )
 
                     student.mark = markState.value.toIntOrNull() ?: 0
-
                     students.add(student)
 
+                    // Clear inputs
                     idState.value = ""
                     nameState.value = ""
                     courseState.value = ""
@@ -72,9 +84,13 @@ fun App() {
             ) {
                 Text("Add Student")
             }
+
+            // Display list (Exercise 3)
+            StudentList(students)
         }
     }
 }
+
 
 
 
