@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 
 @Composable
 fun App() {
@@ -37,13 +39,50 @@ fun App() {
 }
 
 @Composable
+fun StudentTypeDropdown(onTypeSelected: (String) -> Unit) {
+
+    val expanded = remember { mutableStateOf(false) }  // Controls dropdown visibility
+
+    Column {
+
+        Button(onClick = {
+            expanded.value = !expanded.value  // Toggle dropdown visibility
+        }) {
+            Text("Select Student Type")
+        }
+
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false }  // Close when clicking outside
+        ) {
+
+            DropdownMenuItem(
+                text = { Text("Undergraduate") },
+                onClick = {
+                    onTypeSelected("u")  // Send selection back
+                    expanded.value = false
+                }
+            )
+
+            DropdownMenuItem(
+                text = { Text("Masters") },
+                onClick = {
+                    onTypeSelected("m")  // Send selection back
+                    expanded.value = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
 fun AddStudent(onStudentAdded: (Student) -> Unit) {
 
     val idState = remember { mutableStateOf("") }
     val nameState = remember { mutableStateOf("") }
     val courseState = remember { mutableStateOf("") }
     val markState = remember { mutableStateOf("") }
-
+    val typeState = remember { mutableStateOf("u") }  // Default type (Exercise 7)
     Column {
         OutlinedTextField(
             value = idState.value,
@@ -73,13 +112,25 @@ fun AddStudent(onStudentAdded: (Student) -> Unit) {
             label = { Text("Enter mark") }
         )
 
+        // Dropdown for selecting type (Exercise 7)
+        StudentTypeDropdown(onTypeSelected = {
+            typeState.value = it
+        })
+
+        Text(
+            text = "Selected type: ${
+                if (typeState.value == "m") "Masters" else "Undergraduate"
+            }"
+        )
+
         Button(
             onClick = {
-                val student = Undergraduate(
-                    idState.value,
-                    nameState.value,
-                    courseState.value
-                )
+                // Updated code for Excercise 7 to create Undergraduate or Master Student object
+                val student =
+                    if (typeState.value == "m")
+                        Masters(idState.value, nameState.value, courseState.value)
+                    else
+                        Undergraduate(idState.value, nameState.value, courseState.value)
 
                 student.mark = markState.value.toIntOrNull() ?: 0
 
